@@ -1,4 +1,4 @@
-(defproject twink "0.1.0"
+(defproject flock/twink "0.1.0"
   :description "Определяем имя и пол по полному имени."
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
