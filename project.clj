@@ -14,4 +14,13 @@
                                  (require 'user.my)]}
              :dev {:resource-paths ["resources"]
                    :dependencies [[org.clojure/clojure "1.8.0"]
-                                  [org.clojure/tools.namespace "0.2.10"]]}})
+                                  [org.clojure/tools.namespace "0.2.10"]]}}
+  :mirrors {"central" {:name "Nexus"
+                       :url "http://artifacts.dev.flocktory.com:8081/nexus/content/groups/public/"
+                       :repo-manager true}
+            #"clojars" {:name "Nexus"
+                        :url "http://artifacts.dev.flocktory.com:8081/nexus/content/groups/public/"
+                        :repo-manager true}}
+  :deploy-repositories [["releases"
+                         {:url  "http://artifacts.dev.flocktory.com:8081/nexus/content/repositories/releases/"
+                          :sign-releases false}]])
