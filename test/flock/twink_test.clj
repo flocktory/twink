@@ -53,6 +53,9 @@
          {:first-name "Nilüfer" :sex :female}))
   (is (= (parse "rıdvan.2001" "tr")
          {:first-name "Rıdvan" :sex :male}))
+  ;; мимо
+  (is (= (parse "ladyboy" "tr")
+         nil))
   ;; двойные испанские имена
   (is (= (parse "luis pablo", "es2")
          {:first-name "Luis Pablo" :sex :male})))
