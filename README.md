@@ -10,7 +10,7 @@
 
 Use in your code:
 
-```lang:clojure
+```clojure
 (require '[flock.twink :as twink])
 (twink/parse "zhenya") ;; неявная локаль "ru"
 ; {:first-name "Женя" :sex nil}
