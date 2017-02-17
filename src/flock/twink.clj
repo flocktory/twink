@@ -46,7 +46,6 @@
     nil))
 
 (defn- capitalize-words
-  "Capitalize every word in a string"
   [s]
   (->> (str/split (str s) #"\b")
        (map str/capitalize)
@@ -81,8 +80,14 @@
            :locale locale}))))))
 
 (defn parse
-  "Пытается определить пол и имя по строке-имени. Пользуется словариком соответствий
-  имен (katya => екатерина) и полов-имен (екатерина => :female)"
+  "Tries to find sex and full first name from input string.
+   Uses list of dictionaries to translate short name to full name and name to sex.
+   Dictionaries are used in predefined order: :ru :tr :es2 :es, caller can
+   pass desired locale to promote it in front of the list.
+   Returns nil or dictionary with keys:
+     :first-name -- translated and capitalized name;
+     :sex -- :male/:female or nil for unisex name;
+     :locale -- locale used to find sex/full name"
   ([n] (parse n nil))
   ([n locale]
    (when n

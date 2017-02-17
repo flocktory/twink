@@ -1,23 +1,27 @@
 # twink
 
-[ladyboy](https://github.com/flocktory/ladyboy), но на кложе
+[ladyboy](https://github.com/flocktory/ladyboy), but in clojure: find out whether it boy or girl?
 
 ## Usage
 
-Добавить зависимость в `project.clj`:
+Add it to your `project.clj`:
 
-`[flock/twink "0.1.0"]`
+`[com.flocktory/twink "0.1.0"]`
 
 Use in your code:
 
 ```clojure
 (require '[flock.twink :as twink])
-(twink/parse "zhenya") ;; неявная локаль "ru"
-; {:first-name "Женя" :sex nil}
-(twink/parse "kolya" "ru")
-; {:first-name "Николай" :sex :male}
-(twink/parse "recep" "tr")
-; {:first-name "Recep" :sex :male}
-(twink/parse "juan pablo" "es2") ;; двойные испанские имена
-; {:first-name "Juan Pablo" :sex :male}
+(twink/parse "zhenya")
+; {:first-name "Женя" :sex nil :locale :ru }
+(twink/parse "kolya")
+; {:first-name "Николай" :sex :male :locale :ru}
+(twink/parse "recep")
+; {:first-name "Recep" :sex :male :locale :ru}
+(twink/parse "juan pablo")n
+; {:first-name "Juan Pablo" :sex :male :locale :es2}
+(twink/parse "dark emperor")
+; nil
+(twink/parse "elia" :es) ;; use :es locale first'
+; {:first-name "Elia" :sex :male :locale :es}
 ```
