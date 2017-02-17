@@ -11,35 +11,41 @@
           keys (map keyword (first lines))]
       (doall (map #(apply assoc {} (interleave keys %)) (rest lines))))))
 
-(def names
+(def locales [:ru :tr :es2 :es])
+(def double-names-locales #{:es2})
+
+(def russian-names
   (->> (read-dict "name2name.csv")
        (reduce #(if (= "first" (:type %2))
                   (assoc %1 (:name %2) (:name.new %2)) %1)
                {})))
 
+(def names
+  {:ru russian-names})
 
-(def sexes (atom {}))
-
-(defn- read-sexes [dict-name]
+(defn- read-sexes [locale]
   (into {}
-        (for [{name :name sex :sex.byname} (read-dict dict-name)
+        (for [{name :name sex :sex.byname} (read-dict (format "name2sex_%s.csv"
+                                                              (name locale)))
               :let [sex-kw (Integer/parseInt sex)]
               :when sex-kw]
           [name sex-kw])))
 
-(def sexes-default (read-sexes "name2sex.csv"))
+(def sexes
+  (into {} (map (juxt identity read-sexes) locales)))
 
 (defn- sex? [n locale]
-  (if-let [s (@sexes locale)]
-    (get s n)
-    (let [resource-name (format "name2sex_%s.csv" (some-> locale name str/lower-case))]
-      (if (io/resource resource-name)
-        (let [loc-sexes (read-sexes resource-name)]
-          (do (swap! sexes assoc locale loc-sexes)
-              (get loc-sexes n)))
-        (sexes-default n)))))
+  (when n
+    (let [s (sexes locale)]
+      (get s n))))
 
-(defn capitalize-words
+(defn- normalize-name [name locale]
+  (if-let [table (names locale)]
+    (table name)
+    ;; else
+    nil))
+
+(defn- capitalize-words
   "Capitalize every word in a string"
   [s]
   (->> (str/split (str s) #"\b")
@@ -47,24 +53,42 @@
        str/join))
 
 (defn- locale-to-transformer [locale]
-  (if (str/ends-with? locale "2")
+  (if (double-names-locales locale)
     (fn [tokens] (->> tokens
-                      (partition 2 1)
+                      (partition 2 1 "")
                       (map #(str/join " " %))))
     identity))
+
+(defn- tr-locale [locale]
+  (cond (keyword? locale)
+        locale
+        (string? locale)
+        (-> locale str/lower-case keyword)
+        :else nil))
+
+(defn- try-parse-with-locale [n locale]
+  (->>
+   (re-seq #"\p{L}+" n)
+   ((locale-to-transformer locale))
+   (map str/lower-case)
+   (some
+    (fn [token]
+      (let [maybe-normalized (normalize-name token locale)
+            sex (or (sex? token locale) (sex? maybe-normalized locale))]
+        (when (or maybe-normalized sex)
+          {:first-name (capitalize-words (or maybe-normalized token))
+           :sex (SEX sex)
+           :locale locale}))))))
 
 (defn parse
   "Пытается определить пол и имя по строке-имени. Пользуется словариком соответствий
   имен (katya => екатерина) и полов-имен (екатерина => :female)"
-  ([n] (parse n "ru"))
+  ([n] (parse n nil))
   ([n locale]
    (when n
-     (->>
-      (re-seq #"\p{L}+" n)
-      ((locale-to-transformer locale))
-      (map str/lower-case)
-      (some
-       #(let [n2  (if (= "ru" locale) (names %) %)
-              sex (or (sex? % locale) (and n2 (sex? n2 locale)))]
-          (when (or n2 sex)
-            {:first-name (capitalize-words (or n2 %)) :sex (SEX sex)})))))))
+     (let [locale' (tr-locale locale)
+           ordered-locales (if locale' (distinct (cons locale' locales))
+                               locales)]
+    (->> ordered-locales
+         (map (partial try-parse-with-locale n))
+         (some identity))))))
