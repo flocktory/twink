@@ -2,6 +2,9 @@
 
 [ladyboy](https://github.com/flocktory/ladyboy), but in clojure: find out whether it boy or girl?
 
+[![Clojars Project](https://clojars.org/com.flocktory/twink/latest-version.svg)](https://clojars.org/com.flocktory/twink)
+
+
 ## Usage
 
 Add it to your `project.clj`:
