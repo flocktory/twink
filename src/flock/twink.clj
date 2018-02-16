@@ -88,12 +88,15 @@
      :first-name -- translated and capitalized name;
      :sex -- :male/:female or nil for unisex name;
      :locale -- locale used to find sex/full name"
-  ([n] (parse n nil))
-  ([n locale]
+  ([n] (parse n nil nil))
+  ([n locale] (parse n locale nil))
+  ([n locale force?]
    (when n
      (let [locale' (tr-locale locale)
-           ordered-locales (if locale' (distinct (cons locale' locales))
-                               locales)]
+           ordered-locales (cond
+                             (and locale' force?) [locale']
+                             locale' (distinct (cons locale' locales))
+                             :else locales)]
     (->> ordered-locales
          (map (partial try-parse-with-locale n))
          (some identity))))))

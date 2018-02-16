@@ -75,3 +75,9 @@
          {:first-name "Juan" :sex :female :locale :es2}))
   (is (= (parse "Juan" "es")
          {:first-name "Juan" :sex :male :locale :es})))
+
+(deftest parse-with-enforce-location
+  (is (= (parse "foo@bar.ru" :ru)
+         {:first-name "Ru" :sex :female :locale :es2}))
+  (is (= (parse "foo@bar.ru" :ru true)
+         nil)))

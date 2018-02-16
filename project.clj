@@ -1,4 +1,4 @@
-(defproject com.flocktory/twink "0.2.0"
+(defproject com.flocktory/twink "0.3.0"
   :description "Detect sex and full name from string that looks like name"
   :url "https://github.com/flocktory/twink"
   :license {:name "Eclipse Public License"
