@@ -9,7 +9,7 @@
 
 Add it to your `project.clj`:
 
-`[com.flocktory/twink "0.2.0"]`
+`[com.flocktory/twink "0.3.1"]`
 
 Use in your code:
 
